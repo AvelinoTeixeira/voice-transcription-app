@@ -1,26 +1,26 @@
-
 export type Language = 'pt' | 'en'
 
 export type RecorderStatus =
-  | 'idle'        
-  | 'recording'   
-  | 'paused'      
-  | 'processing'  
+  | 'idle'
+  | 'recording'
+  | 'paused'
+  | 'processing'
 
 export type AIAction = 'clean' | 'summarize' | 'translate' | 'ask'
 
 export interface Transcription {
   id: string
-  rawText: string     
-  cleanText: string     
+  title: string | null  // ← adicionado
+  rawText: string
+  cleanText: string
   language: Language
-  duration: number      
+  duration: number
   createdAt: string
 }
 
 export interface SpeechResult {
   transcript: string
-  isFinal: boolean      
+  isFinal: boolean
   confidence: number
 }
 
@@ -40,6 +40,7 @@ export interface AIActionsState {
 }
 
 export interface TranscribeResponse {
+  id: string            // ← adicionado
   raw: string
   clean: string
   language: Language
