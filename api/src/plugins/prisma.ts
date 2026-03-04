@@ -1,21 +1,20 @@
 import fp from 'fastify-plugin'
-import { PrismaClient } from '@prisma/client/edge'
+import pkg from '@prisma/client'
+const { PrismaClient } = pkg
 import { PrismaPg } from '@prisma/adapter-pg'
 
 declare module 'fastify' {
   interface FastifyInstance {
-    prisma: PrismaClient
+    prisma: InstanceType<typeof PrismaClient>
   }
 }
 
 export default fp(async (fastify) => {
   const connectionString = process.env.DATABASE_URL!
-
   const adapter = new PrismaPg({ connectionString })
   const prisma = new PrismaClient({ adapter } as any)
 
   await prisma.$connect()
-
   fastify.decorate('prisma', prisma)
 
   fastify.addHook('onClose', async (instance) => {
