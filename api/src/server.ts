@@ -4,9 +4,9 @@ import multipart from '@fastify/multipart'
 import cors from '@fastify/cors'
 import helmet from '@fastify/helmet'
 
-import prismaPlugin from '@/plugins/prisma'
-import { transcribeRoute } from '@/routes/transcribe'
-import { historyRoute } from '@/routes/history'
+import prismaPlugin from './plugins/prisma'
+import { transcribeRoute } from './routes/transcribe'
+import { historyRoute } from './routes/history'
 
 const fastify = Fastify({
   logger: {

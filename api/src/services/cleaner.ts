@@ -1,6 +1,7 @@
 import Groq from 'groq-sdk'
-import { buildCleanerPrompt } from '@/lib/prompts'
-import type { Language } from '@/types'
+import { buildCleanerPrompt } from './lib/prompts'
+
+type Language = 'pt' | 'en'
 
 export class CleanerService {
   private client: Groq

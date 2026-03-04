@@ -1,5 +1,6 @@
 import Groq from 'groq-sdk'
-import type { Language } from '@/types'
+
+type Language = 'pt' | 'en'
 
 export class WhisperService {
   private client: Groq
