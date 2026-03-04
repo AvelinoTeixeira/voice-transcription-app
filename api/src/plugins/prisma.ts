@@ -1,11 +1,10 @@
 import fp from 'fastify-plugin'
-import pkg from '@prisma/client'
-const { PrismaClient } = pkg
+import { PrismaClient } from '@prisma/client'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 declare module 'fastify' {
   interface FastifyInstance {
-    prisma: InstanceType<typeof PrismaClient>
+    prisma: PrismaClient
   }
 }
 
