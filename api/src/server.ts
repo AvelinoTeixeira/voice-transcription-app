@@ -1,10 +1,4 @@
-import path from 'path'
-import dotenv from 'dotenv'
-
-// Força o caminho absoluto do .env
-dotenv.config({ path: path.resolve(__dirname, '../.env') })
-
-console.log('API KEY loaded:', process.env.OPENAI_API_KEY ? 'YES' : 'NO')
+import 'dotenv/config'
 import Fastify from 'fastify'
 import multipart from '@fastify/multipart'
 import cors from '@fastify/cors'
@@ -28,14 +22,18 @@ async function bootstrap() {
   })
 
   await fastify.register(cors, {
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000'],
-    methods: ['GET', 'POST', 'DELETE'],
+    origin: [
+      'http://localhost:3000',
+      'http://127.0.0.1:3000',
+      'https://voice-transcription-app-wine.vercel.app',
+    ],
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
     credentials: true,
   })
 
   await fastify.register(multipart, {
     limits: {
-      fileSize: 25 * 1024 * 1024, // 25MB
+      fileSize: 25 * 1024 * 1024,
     },
   })
 
