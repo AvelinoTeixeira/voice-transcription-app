@@ -16,11 +16,8 @@ export class WhisperService {
     language: Language
   ): Promise<{ text: string; detectedLanguage: string }> {
 
-    const file = new File(
-      [audioBuffer as unknown as BlobPart],
-      'recording.webm',
-      { type: 'audio/webm' }
-    )
+    const blob = new Blob([new Uint8Array(audioBuffer)], { type: 'audio/webm' })
+    const file = new File([blob], 'recording.webm', { type: 'audio/webm' })
 
     const response = await this.client.audio.transcriptions.create({
       file,
