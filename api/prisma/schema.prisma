@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Transcription {
+  id        String   @id @default(cuid())
+  title     String?
+  rawText   String
+  cleanText String
+  language  String
+  duration  Int
+  audioUrl  String?
+  createdAt DateTime @default(now())
+
+  @@map("transcriptions")
+}
