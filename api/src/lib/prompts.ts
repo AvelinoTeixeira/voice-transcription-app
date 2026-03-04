@@ -1,4 +1,4 @@
-import type { Language } from '@/types'
+type Language = 'pt' | 'en'
 
 export const buildCleanerPrompt = (rawText: string, language: Language) => `
 You are a professional transcription editor.

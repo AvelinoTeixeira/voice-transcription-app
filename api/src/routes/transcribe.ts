@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify'
-import { WhisperService } from './services/whisper'
-import { CleanerService } from './services/cleaner'
-import type { Language } from './types'
+import { WhisperService } from '../services/whisper'
+import { CleanerService } from '../services/cleaner'
+import type { Language } from '../types'
 
 export async function transcribeRoute(fastify: FastifyInstance) {
   fastify.post('/transcribe', async (request, reply) => {
