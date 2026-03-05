@@ -1,0 +1,22 @@
+generator client {
+  provider        = "prisma-client-js"
+  output          = "../src/generated/prisma"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Transcription {
+  id        String   @id @default(cuid())
+  title     String?
+  rawText   String
+  cleanText String
+  language  String
+  duration  Int
+  audioUrl  String?
+  createdAt DateTime @default(now())
+
+  @@map("transcriptions")
+}

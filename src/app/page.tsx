@@ -51,6 +51,7 @@ export default function HomePage() {
     setError(null)
     setStreamingText('')
     setRawText('')
+    setProcessingStatus('transcribing')  // ← define logo no início
 
     await transcribeAudioStream(
       audioBlob!,
@@ -64,18 +65,18 @@ export default function HomePage() {
         setResult(result)
         setStreamingText('')
         setRawText('')
-        setProcessingStatus(null)
+        setProcessingStatus(null)  // ← limpa quando termina
       },
       (err) => {
         setError(err)
-        setProcessingStatus(null)
-        resetRecorder()  
+        setProcessingStatus(null)  // ← limpa em caso de erro
+        resetRecorder()
       }
     )
   } catch (err) {
     setError('Erro ao transcrever o áudio. Tenta novamente.')
     setProcessingStatus(null)
-    resetRecorder()  
+    resetRecorder()
     console.error('[HomePage] Transcription error:', err)
   }
 }
