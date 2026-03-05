@@ -63,7 +63,7 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       mediaRecorder.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: 'audio/webm' })
         setAudioBlob(blob)
-        setStatusSynced('finished')
+        setStatusSynced('processing')
         stream.getTracks().forEach(track => track.stop())
       }
 
