@@ -35,7 +35,8 @@ export async function transcribeRoute(fastify: FastifyInstance) {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': 'https://voice-transcription-app-wine.vercel.app',
+        'Access-Control-Allow-Credentials': 'true',
       })
 
       let cleanText = ''
@@ -65,6 +66,12 @@ export async function transcribeRoute(fastify: FastifyInstance) {
 
     } catch (error) {
       fastify.log.error(error)
+      if (!reply.raw.headersSent) {
+        reply.raw.writeHead(500, {
+          'Content-Type': 'text/event-stream',
+          'Access-Control-Allow-Origin': 'https://voice-transcription-app-wine.vercel.app',
+        })
+      }
       reply.raw.write(`data: ${JSON.stringify({ error: 'Transcription failed' })}\n\n`)
       reply.raw.end()
     }
