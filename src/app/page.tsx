@@ -192,7 +192,7 @@ export default function HomePage() {
         )}
 
         {/* Etapa 2 — GPT-4o a refinar */}
-        {(processingStatus === 'cleaning' || streamingText) && !result && (
+        {processingStatus !== null && !result && (
           <div className="rounded-2xl border border-green-200 dark:border-green-900 bg-white dark:bg-slate-900 shadow-sm p-6 flex flex-col gap-3">
             {rawText && (
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-3">
