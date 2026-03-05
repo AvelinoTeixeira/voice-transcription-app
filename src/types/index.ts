@@ -5,7 +5,6 @@ export type RecorderStatus =
   | 'recording'
   | 'paused'
   | 'processing'
-  | 'finished'
 
 export type AIAction = 'clean' | 'summarize' | 'translate' | 'ask'
 
