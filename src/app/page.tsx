@@ -16,7 +16,8 @@ export default function HomePage() {
   const [result, setResult] = useState<TranscribeResponse | null>(null)
   const [streamingText, setStreamingText] = useState('')
   const [rawText, setRawText] = useState('')
-  const [processingStatus, setProcessingStatus] = useState<'transcribing' | 'cleaning' | null>(null)
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [processingStep, setProcessingStep] = useState<'transcribing' | 'cleaning' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const {
@@ -47,46 +48,53 @@ export default function HomePage() {
   }, [audioBlob, status])
 
   const handleTranscription = async () => {
-  try {
-    setError(null)
-    setStreamingText('')
-    setRawText('')
-    setProcessingStatus('transcribing')  // ← define logo no início
+    try {
+      setError(null)
+      setStreamingText('')
+      setRawText('')
+      setResult(null)
+      setIsProcessing(true)
+      setProcessingStep('transcribing')
 
-    await transcribeAudioStream(
-      audioBlob!,
-      language,
-      (status, raw) => {
-        setProcessingStatus(status)
-        if (raw) setRawText(raw)
-      },
-      (token) => setStreamingText(prev => prev + token),
-      (result) => {
-        setResult(result)
-        setStreamingText('')
-        setRawText('')
-        setProcessingStatus(null)  // ← limpa quando termina
-      },
-      (err) => {
-        setError(err)
-        setProcessingStatus(null)  // ← limpa em caso de erro
-        resetRecorder()
-      }
-    )
-  } catch (err) {
-    setError('Erro ao transcrever o áudio. Tenta novamente.')
-    setProcessingStatus(null)
-    resetRecorder()
-    console.error('[HomePage] Transcription error:', err)
+      await transcribeAudioStream(
+        audioBlob!,
+        language,
+        (step, raw) => {
+          setProcessingStep(step)
+          if (raw) setRawText(raw)
+        },
+        (token) => setStreamingText(prev => prev + token),
+        (done) => {
+          // Limpa tudo de uma vez antes de mostrar o resultado
+          setIsProcessing(false)
+          setProcessingStep(null)
+          setStreamingText('')
+          setRawText('')
+          setResult(done)
+        },
+        (err) => {
+          setIsProcessing(false)
+          setProcessingStep(null)
+          setError(err)
+          resetRecorder()
+        }
+      )
+    } catch (err) {
+      setIsProcessing(false)
+      setProcessingStep(null)
+      setError('Erro ao transcrever o áudio. Tenta novamente.')
+      resetRecorder()
+      console.error('[HomePage] Transcription error:', err)
+    }
   }
-}
 
   const handleStart = async () => {
     setResult(null)
     setError(null)
     setStreamingText('')
     setRawText('')
-    setProcessingStatus(null)
+    setIsProcessing(false)
+    setProcessingStep(null)
     resetTranscript()
     await startRecording()
     startListening(language)
@@ -114,7 +122,8 @@ export default function HomePage() {
     setResult(null)
     setStreamingText('')
     setRawText('')
-    setProcessingStatus(null)
+    setIsProcessing(false)
+    setProcessingStep(null)
     setError(null)
   }
 
@@ -143,19 +152,16 @@ export default function HomePage() {
 
         {/* Card principal */}
         <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm p-6 flex flex-col gap-6">
-
           <WaveformVisualizer
             isRecording={status === 'recording'}
             isPaused={status === 'paused'}
           />
-
           <LiveTranscript
             finalTranscript={finalTranscript}
             liveTranscript={liveTranscript}
             isListening={isListening}
             isSupported={isSupported}
           />
-
           <RecorderControls
             status={status}
             duration={duration}
@@ -176,42 +182,46 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Etapa 1 — Whisper a processar */}
-        {processingStatus === 'transcribing' && (
-          <div className="rounded-2xl border border-blue-200 dark:border-blue-900 bg-white dark:bg-slate-900 shadow-sm p-6">
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
-              <div>
-                <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                  A transcrever áudio...
-                </p>
-                <p className="text-xs text-slate-400">Whisper AI a processar</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Etapa 2 — GPT-4o a refinar */}
-        {processingStatus !== null && !result && (
+        {/* A processar — só aparece quando isProcessing=true E result=null */}
+        {isProcessing && !result && (
           <div className="rounded-2xl border border-green-200 dark:border-green-900 bg-white dark:bg-slate-900 shadow-sm p-6 flex flex-col gap-3">
-            {rawText && (
-              <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-3">
-                <p className="text-xs text-slate-400 mb-1">Whisper (cru)</p>
-                <p className="text-xs text-slate-500 leading-relaxed italic">{rawText}</p>
+
+            {/* Etapa 1 — Whisper */}
+            {processingStep === 'transcribing' && (
+              <div className="flex items-center gap-3">
+                <div className="w-5 h-5 border-2 border-blue-300 border-t-blue-600 rounded-full animate-spin" />
+                <div>
+                  <p className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    A transcrever áudio...
+                  </p>
+                  <p className="text-xs text-slate-400">Whisper AI a processar</p>
+                </div>
               </div>
             )}
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <p className="text-xs text-slate-400">GPT-4o a refinar...</p>
-              </div>
-              {streamingText && (
-                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
-                  {streamingText}
-                  <span className="inline-block w-0.5 h-4 bg-slate-400 animate-pulse ml-0.5 align-middle" />
-                </p>
-              )}
-            </div>
+
+            {/* Etapa 2 — LLaMA streaming */}
+            {processingStep === 'cleaning' && (
+              <>
+                {rawText && (
+                  <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-3">
+                    <p className="text-xs text-slate-400 mb-1">Whisper (cru)</p>
+                    <p className="text-xs text-slate-500 leading-relaxed italic">{rawText}</p>
+                  </div>
+                )}
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                    <p className="text-xs text-slate-400">LLaMA a refinar...</p>
+                  </div>
+                  {streamingText && (
+                    <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                      {streamingText}
+                      <span className="inline-block w-0.5 h-4 bg-slate-400 animate-pulse ml-0.5 align-middle" />
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </div>
         )}
 
@@ -223,21 +233,18 @@ export default function HomePage() {
                 Transcrição Final
               </h2>
               <span className="text-xs text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-full">
-                via Whisper + GPT-4o
+                via Whisper + LLaMA
               </span>
             </div>
-
             <div className="rounded-lg bg-slate-50 dark:bg-slate-800/50 p-4">
               <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                 {result.clean}
               </p>
             </div>
-
             <div className="flex gap-3 text-xs text-slate-400">
               <span>🌍 {result.language === 'pt' ? 'Português' : 'English'}</span>
               <span>⏱️ {result.duration}s</span>
             </div>
-
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigator.clipboard.writeText(result.clean)}
