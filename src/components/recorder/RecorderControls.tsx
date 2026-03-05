@@ -10,6 +10,7 @@ interface RecorderControlsProps {
   status: RecorderStatus
   duration: number
   language: Language
+  transcription?: string   
   onLanguageChange: (lang: Language) => void
   onStart: () => void
   onStop: () => void
@@ -23,6 +24,7 @@ export function RecorderControls({
   duration,
   language,
   onLanguageChange,
+  transcription, 
   onStart,
   onStop,
   onPause,
@@ -135,7 +137,7 @@ export function RecorderControls({
         )}
 
         {/* PROCESSING → spinner simples e neutro */}
-        {isProcessing && (
+        {isProcessing && !transcription &&  (
           <div className="flex items-center gap-2 text-slate-500">
             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
             <span className="text-sm">A processar...</span>

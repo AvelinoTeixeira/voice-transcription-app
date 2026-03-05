@@ -172,6 +172,7 @@ export default function HomePage() {
             onPause={handlePause}
             onResume={handleResume}
             onReset={handleReset}
+            transcription={result?.clean}
           />
         </div>
 
