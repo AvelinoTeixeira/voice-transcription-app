@@ -42,22 +42,19 @@ export function TranscriptionCard({ transcription, onDelete, uiLanguage }: Trans
   return (
     <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 flex flex-col gap-3 hover:shadow-md transition-shadow">
 
-      {/* Header */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
 
-          {/* Título — se existir */}
           {transcription.title && (
             <h3 className="font-medium text-slate-800 dark:text-slate-200 text-sm">
               {transcription.title}
             </h3>
           )}
 
-          {/* Metadata */}
           <div className="flex items-center gap-2 flex-wrap">
             <span className="flex items-center gap-1 text-xs text-slate-400">
               <Globe className="w-3 h-3" />
-              {transcription.language === 'pt' ? 'Português' : 'English'}
+              {uiLanguage === 'pt' ? 'Português' : 'English'}
             </span>
             <span className="text-slate-200 dark:text-slate-700">•</span>
             <span className="flex items-center gap-1 text-xs text-slate-400">
@@ -71,7 +68,6 @@ export function TranscriptionCard({ transcription, onDelete, uiLanguage }: Trans
           </div>
         </div>
 
-        {/* Ações */}
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={handleCopy}
@@ -94,12 +90,10 @@ export function TranscriptionCard({ transcription, onDelete, uiLanguage }: Trans
         </div>
       </div>
 
-      {/* Texto limpo */}
       <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed line-clamp-3">
         {transcription.cleanText}
       </p>
 
-      {/* Texto cru — colapsável */}
       <details className="group">
         <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 transition-colors list-none flex items-center gap-1">
           <span className="group-open:hidden">{tx.card.showRaw}</span>

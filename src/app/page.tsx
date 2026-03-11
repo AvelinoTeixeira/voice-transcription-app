@@ -21,7 +21,6 @@ export default function HomePage() {
   const [processingStep, setProcessingStep] = useState<'transcribing' | 'cleaning' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  
   const languageRef = useRef<Language>('pt')
   useEffect(() => { languageRef.current = language }, [language])
 
@@ -51,12 +50,8 @@ export default function HomePage() {
     startListening, stopListening, resetTranscript,
   } = useSpeechRecognition()
 
-  useEffect(() => {
-    if (audioBlob && status === 'processing') handleTranscription()
-  }, [audioBlob, status])
-
   const handleTranscription = async () => {
-    const currentLanguage = languageRef.current  // sempre o valor correto
+    const currentLanguage = languageRef.current
     try {
       setError(null)
       setStreamingText('')
@@ -85,6 +80,10 @@ export default function HomePage() {
       console.error('[HomePage] Transcription error:', err)
     }
   }
+
+  useEffect(() => {
+    if (audioBlob && status === 'processing') handleTranscription()
+  }, [audioBlob, status])
 
   const handleStart = async () => {
     setResult(null); setError(null); setStreamingText(''); setRawText('')
@@ -191,7 +190,7 @@ export default function HomePage() {
               <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{result.clean}</p>
             </div>
             <div className="flex gap-3 text-xs text-slate-400">
-              <span>🌍 {result.language === 'pt' ? 'Português' : 'English'}</span>
+              <span>🌍 {language === 'pt' ? 'Português' : 'English'}</span>
               <span>⏱️ {result.duration}s</span>
             </div>
             <div className="flex items-center gap-4">
