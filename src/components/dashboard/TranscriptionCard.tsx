@@ -52,10 +52,10 @@ export function TranscriptionCard({ transcription, onDelete, uiLanguage }: Trans
           )}
 
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="flex items-center gap-1 text-xs text-slate-400">
-              <Globe className="w-3 h-3" />
-              {uiLanguage === 'pt' ? 'Português' : 'English'}
-            </span>
+           <span className="flex items-center gap-1 text-xs text-slate-400">
+  <Globe className="w-3 h-3" />
+  {transcription.language === 'pt' ? 'Português' : 'English'}
+</span>
             <span className="text-slate-200 dark:text-slate-700">•</span>
             <span className="flex items-center gap-1 text-xs text-slate-400">
               <Clock className="w-3 h-3" />

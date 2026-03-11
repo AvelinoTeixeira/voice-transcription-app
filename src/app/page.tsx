@@ -190,7 +190,7 @@ export default function HomePage() {
               <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{result.clean}</p>
             </div>
             <div className="flex gap-3 text-xs text-slate-400">
-              <span>🌍 {language === 'pt' ? 'Português' : 'English'}</span>
+              <span>🌍 {result.language === 'pt' ? 'Português' : 'English'}</span>
               <span>⏱️ {result.duration}s</span>
             </div>
             <div className="flex items-center gap-4">
