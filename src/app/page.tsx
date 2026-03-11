@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { History } from 'lucide-react'
 import { WaveformVisualizer } from '@/components/recorder/WaveformVisualizer'
@@ -21,16 +21,23 @@ export default function HomePage() {
   const [processingStep, setProcessingStep] = useState<'transcribing' | 'cleaning' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // tx deve ser calculado depois de todos os useState
+  // Garante que handleTranscription usa sempre o idioma mais recente
+  const languageRef = useRef<Language>('pt')
+  useEffect(() => { languageRef.current = language }, [language])
+
   const tx = t(language)
 
   useEffect(() => {
     const stored = localStorage.getItem('ui-language') as Language | null
-    if (stored === 'pt' || stored === 'en') setLanguage(stored)
+    if (stored === 'pt' || stored === 'en') {
+      setLanguage(stored)
+      languageRef.current = stored
+    }
   }, [])
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang)
+    languageRef.current = lang
     localStorage.setItem('ui-language', lang)
   }
 
@@ -49,6 +56,7 @@ export default function HomePage() {
   }, [audioBlob, status])
 
   const handleTranscription = async () => {
+    const currentLanguage = languageRef.current  // sempre o valor correto
     try {
       setError(null)
       setStreamingText('')
@@ -58,7 +66,7 @@ export default function HomePage() {
       setProcessingStep('transcribing')
 
       await transcribeAudioStream(
-        audioBlob!, language,
+        audioBlob!, currentLanguage,
         (step, raw) => { setProcessingStep(step); if (raw) setRawText(raw) },
         (token) => setStreamingText(prev => prev + token),
         (done) => {
@@ -82,12 +90,12 @@ export default function HomePage() {
     setResult(null); setError(null); setStreamingText(''); setRawText('')
     setIsProcessing(false); setProcessingStep(null); resetTranscript()
     await startRecording()
-    startListening(language)
+    startListening(languageRef.current)
   }
 
   const handleStop = () => { stopRecording(); stopListening() }
   const handlePause = () => { pauseRecording(); stopListening() }
-  const handleResume = () => { resumeRecording(); startListening(language) }
+  const handleResume = () => { resumeRecording(); startListening(languageRef.current) }
   const handleReset = () => {
     resetRecorder(); stopListening(); resetTranscript()
     setResult(null); setStreamingText(''); setRawText('')
