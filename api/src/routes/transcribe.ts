@@ -28,8 +28,10 @@ export async function transcribeRoute(fastify: FastifyInstance) {
       fastify.log.info('Sending audio to Whisper...')
       const { text: rawText, detectedLanguage } = await whisperService.transcribe(audioBuffer, language)
 
+      fastify.log.info(`Whisper detected language: "${detectedLanguage}"`)
+
       fastify.log.info('Streaming clean text with LLaMA...')
-      const stream = await cleanerService.cleanStream(rawText, detectedLanguage as Language)
+      const stream = await cleanerService.cleanStream(rawText, detectedLanguage)
 
       reply.raw.writeHead(200, {
         'Content-Type': 'text/event-stream',
