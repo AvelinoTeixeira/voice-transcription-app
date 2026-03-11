@@ -24,18 +24,11 @@ export class WhisperService {
       file,
       model: "whisper-large-v3-turbo",
       response_format: "verbose_json",
-      language: language,
     });
-
-    const raw = (response.language ?? language).toLowerCase();
-    const detectedLanguage: Language =
-      raw.startsWith("en") ? "en" :
-      raw.startsWith("pt") ? "pt" :
-      language;
 
     return {
       text: response.text,
-      detectedLanguage,
+      detectedLanguage: language,
     };
   }
 }
