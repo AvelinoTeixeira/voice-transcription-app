@@ -10,7 +10,7 @@ RULES:
 - Remove filler words (uh, um, like, então, tipo, né, sabe)
 - Keep the original meaning 100% intact
 - Do NOT add information that wasn't said
-- Output language: ${language === 'pt' ? 'Brazilian Portuguese' : 'English'}
+- IMPORTANT: Output MUST be in the SAME language as the input text. Do NOT translate.
 
 RAW TRANSCRIPTION:
 """

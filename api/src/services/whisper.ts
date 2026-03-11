@@ -22,7 +22,6 @@ export class WhisperService {
     const response = await this.client.audio.transcriptions.create({
       file,
       model: 'whisper-large-v3',
-      language: language === 'pt' ? 'pt' : 'en',
     })
 
     return {
