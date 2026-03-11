@@ -24,6 +24,7 @@ export class WhisperService {
       file,
       model: "whisper-large-v3-turbo",
       response_format: "verbose_json",
+      language: language,
     });
 
     const raw = (response.language ?? language).toLowerCase();
