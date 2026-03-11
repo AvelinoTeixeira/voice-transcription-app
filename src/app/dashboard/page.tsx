@@ -14,33 +14,32 @@ export default function DashboardPage() {
   const [languageFilter, setLanguageFilter] = useState<Language | 'all'>('all')
   const [uiLanguage, setUiLanguage] = useState<Language>('pt')
 
-  // Read the UI language the user selected on the main page
   useEffect(() => {
     const stored = localStorage.getItem('ui-language') as Language | null
     if (stored === 'pt' || stored === 'en') setUiLanguage(stored)
   }, [])
 
-  const tx = t(uiLanguage)
-
   const { transcriptions, isLoading, error, deleteTranscription } = useTranscriptions()
 
   const filtered = useMemo(() => {
-    return transcriptions.filter(t => {
+    return transcriptions.filter(item => {
       const matchesSearch = search === '' ||
-        t.cleanText.toLowerCase().includes(search.toLowerCase()) ||
-        t.rawText.toLowerCase().includes(search.toLowerCase()) ||
-        t.title?.toLowerCase().includes(search.toLowerCase())
+        item.cleanText.toLowerCase().includes(search.toLowerCase()) ||
+        item.rawText.toLowerCase().includes(search.toLowerCase()) ||
+        item.title?.toLowerCase().includes(search.toLowerCase())
 
-      const matchesLanguage = languageFilter === 'all' || t.language === languageFilter
+      const matchesLanguage = languageFilter === 'all' || item.language === languageFilter
       return matchesSearch && matchesLanguage
     })
   }, [transcriptions, search, languageFilter])
+
+  // tx depois de todos os hooks
+  const tx = t(uiLanguage)
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
       <div className="max-w-2xl mx-auto px-4 py-16 flex flex-col gap-8">
 
-        {/* Header */}
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
@@ -59,7 +58,6 @@ export default function DashboardPage() {
           </Link>
         </div>
 
-        {/* Filtros */}
         <div className="flex flex-col gap-3">
           <SearchBar value={search} onChange={setSearch} placeholder={tx.dashboard.searchPlaceholder} />
           <div className="flex gap-2">
@@ -79,7 +77,6 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Loading skeleton */}
         {isLoading && (
           <div className="flex flex-col gap-3">
             {[1, 2, 3].map(i => (
@@ -91,14 +88,12 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Erro */}
         {error && (
           <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/20 p-4">
             <p className="text-sm text-red-600 dark:text-red-400">{tx.dashboard.errorLoad}</p>
           </div>
         )}
 
-        {/* Lista */}
         {!isLoading && !error && (
           <>
             {filtered.length === 0 ? (
@@ -108,16 +103,10 @@ export default function DashboardPage() {
                 </div>
                 <div>
                   <p className="font-medium text-slate-700 dark:text-slate-300">
-                    {search || languageFilter !== 'all'
-                      ? tx.dashboard.noResults
-                      : tx.dashboard.empty
-                    }
+                    {search || languageFilter !== 'all' ? tx.dashboard.noResults : tx.dashboard.empty}
                   </p>
                   <p className="text-sm text-slate-400 mt-1">
-                    {search || languageFilter !== 'all'
-                      ? tx.dashboard.noResultsHint
-                      : tx.dashboard.emptyHint
-                    }
+                    {search || languageFilter !== 'all' ? tx.dashboard.noResultsHint : tx.dashboard.emptyHint}
                   </p>
                 </div>
                 {!search && languageFilter === 'all' && (

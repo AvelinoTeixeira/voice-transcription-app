@@ -14,6 +14,14 @@ import type { Language, TranscribeResponse } from '@/types'
 
 export default function HomePage() {
   const [language, setLanguage] = useState<Language>('pt')
+  const [result, setResult] = useState<TranscribeResponse | null>(null)
+  const [streamingText, setStreamingText] = useState('')
+  const [rawText, setRawText] = useState('')
+  const [isProcessing, setIsProcessing] = useState(false)
+  const [processingStep, setProcessingStep] = useState<'transcribing' | 'cleaning' | null>(null)
+  const [error, setError] = useState<string | null>(null)
+
+  // tx deve ser calculado depois de todos os useState
   const tx = t(language)
 
   useEffect(() => {
@@ -25,13 +33,6 @@ export default function HomePage() {
     setLanguage(lang)
     localStorage.setItem('ui-language', lang)
   }
-
-  const [result, setResult] = useState<TranscribeResponse | null>(null)
-  const [streamingText, setStreamingText] = useState('')
-  const [rawText, setRawText] = useState('')
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [processingStep, setProcessingStep] = useState<'transcribing' | 'cleaning' | null>(null)
-  const [error, setError] = useState<string | null>(null)
 
   const {
     status, duration, audioBlob,

@@ -104,7 +104,7 @@ export const translations = {
   },
 } as const
 
-export type Translations = typeof translations['pt']
+export type Translations = typeof translations['pt'] | typeof translations['en']
 
 export function t(lang: Language): Translations {
   return translations[lang]
