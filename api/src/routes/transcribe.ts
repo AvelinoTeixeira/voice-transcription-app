@@ -26,12 +26,10 @@ export async function transcribeRoute(fastify: FastifyInstance) {
       const cleanerService = new CleanerService()
 
       fastify.log.info('Sending audio to Whisper...')
-      const { text: rawText, detectedLanguage } = await whisperService.transcribe(audioBuffer, language)
-
-      fastify.log.info(`Whisper detected language: "${detectedLanguage}"`)
+      const { text: rawText } = await whisperService.transcribe(audioBuffer, language)
 
       fastify.log.info('Streaming clean text with LLaMA...')
-      const stream = await cleanerService.cleanStream(rawText, detectedLanguage)
+      const stream = await cleanerService.cleanStream(rawText, language)
 
       reply.raw.writeHead(200, {
         'Content-Type': 'text/event-stream',
@@ -52,7 +50,7 @@ export async function transcribeRoute(fastify: FastifyInstance) {
       }
 
       const transcription = await fastify.prisma.transcription.create({
-        data: { rawText, cleanText, language: detectedLanguage, duration },
+        data: { rawText, cleanText, language, duration },
       })
 
       reply.raw.write(`data: ${JSON.stringify({
@@ -60,7 +58,7 @@ export async function transcribeRoute(fastify: FastifyInstance) {
         id: transcription.id,
         raw: rawText,
         clean: cleanText,
-        language: detectedLanguage,
+        language,
         duration,
       })}\n\n`)
 
