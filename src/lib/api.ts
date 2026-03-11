@@ -11,8 +11,8 @@ export async function transcribeAudioStream(
   onError: (error: string) => void
 ): Promise<void> {
   const formData = new FormData()
-  formData.append('audio', audioBlob, 'recording.webm')
-  formData.append('language', language)
+  formData.append('language', language)                  
+  formData.append('audio', audioBlob, 'recording.webm') 
 
   let response: Response
 
