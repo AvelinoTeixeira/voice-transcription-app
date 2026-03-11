@@ -14,7 +14,7 @@ export class WhisperService {
   async transcribe(
     audioBuffer: Buffer,
     language: Language,
-  ): Promise<{ text: string; detectedLanguage: string }> {
+  ): Promise<{ text: string; detectedLanguage: Language }> {
     const blob = new Blob([new Uint8Array(audioBuffer)], {
       type: "audio/webm",
     });
@@ -25,9 +25,15 @@ export class WhisperService {
       model: "whisper-large-v3",
     });
 
+    const raw = response.language ?? language
+    const detectedLanguage: Language =
+      raw === "english" ? "en" :
+      raw === "portuguese" ? "pt" :
+      language
+
     return {
       text: response.text,
-      detectedLanguage: (response.language ?? language) as Language, 
+      detectedLanguage,
     };
   }
 }
