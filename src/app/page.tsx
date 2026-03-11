@@ -12,8 +12,15 @@ import { transcribeAudioStream } from '@/lib/api'
 import { t } from '@/lib/i18n'
 import type { Language, TranscribeResponse } from '@/types'
 
+// Lê o idioma do localStorage de forma síncrona — antes de qualquer render
+function getInitialLanguage(): Language {
+  if (typeof window === 'undefined') return 'pt'
+  const stored = localStorage.getItem('ui-language')
+  return stored === 'en' ? 'en' : 'pt'
+}
+
 export default function HomePage() {
-  const [language, setLanguage] = useState<Language>('pt')
+  const [language, setLanguage] = useState<Language>(getInitialLanguage)
   const [result, setResult] = useState<TranscribeResponse | null>(null)
   const [streamingText, setStreamingText] = useState('')
   const [rawText, setRawText] = useState('')
@@ -21,19 +28,11 @@ export default function HomePage() {
   const [processingStep, setProcessingStep] = useState<'transcribing' | 'cleaning' | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // Garante que handleTranscription usa sempre o idioma mais recente
-  const languageRef = useRef<Language>('pt')
+  // Ref sempre sincronizado com o state
+  const languageRef = useRef<Language>(getInitialLanguage())
   useEffect(() => { languageRef.current = language }, [language])
 
   const tx = t(language)
-
-  useEffect(() => {
-    const stored = localStorage.getItem('ui-language') as Language | null
-    if (stored === 'pt' || stored === 'en') {
-      setLanguage(stored)
-      languageRef.current = stored
-    }
-  }, [])
 
   const handleLanguageChange = (lang: Language) => {
     setLanguage(lang)
@@ -56,7 +55,7 @@ export default function HomePage() {
   }, [audioBlob, status])
 
   const handleTranscription = async () => {
-    const currentLanguage = languageRef.current  // sempre o valor correto
+    const currentLanguage = languageRef.current
     try {
       setError(null)
       setStreamingText('')
