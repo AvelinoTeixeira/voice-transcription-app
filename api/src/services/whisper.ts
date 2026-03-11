@@ -22,14 +22,15 @@ export class WhisperService {
 
     const response = await this.client.audio.transcriptions.create({
       file,
-      model: "whisper-large-v3",
+      model: "whisper-large-v3-turbo",
+      response_format: "verbose_json",
     });
 
-    const raw = response.language ?? language
+    const raw = (response.language ?? language).toLowerCase();
     const detectedLanguage: Language =
-      raw === "english" ? "en" :
-      raw === "portuguese" ? "pt" :
-      language
+      raw.startsWith("en") ? "en" :
+      raw.startsWith("pt") ? "pt" :
+      language;
 
     return {
       text: response.text,

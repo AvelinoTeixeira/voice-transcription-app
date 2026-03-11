@@ -21,7 +21,7 @@ export function LiveTranscript({
   language,
 }: LiveTranscriptProps) {
   const tx = t(language)
-  // Auto-scroll para o fim quando o texto cresce
+  
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
