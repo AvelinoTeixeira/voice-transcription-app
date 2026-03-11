@@ -2,12 +2,15 @@
 
 import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/utils'
+import { t } from '@/lib/i18n'
+import type { Language } from '@/types'
 
 interface LiveTranscriptProps {
-  finalTranscript: string    // frases completas acumuladas
-  liveTranscript: string     // texto parcial enquanto fala
+  finalTranscript: string
+  liveTranscript: string
   isListening: boolean
   isSupported: boolean
+  language: Language
 }
 
 export function LiveTranscript({
@@ -15,7 +18,9 @@ export function LiveTranscript({
   liveTranscript,
   isListening,
   isSupported,
+  language,
 }: LiveTranscriptProps) {
+  const tx = t(language)
   // Auto-scroll para o fim quando o texto cresce
   const bottomRef = useRef<HTMLDivElement>(null)
 
@@ -23,14 +28,11 @@ export function LiveTranscript({
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [finalTranscript, liveTranscript])
 
-  // Browser não suporta Web Speech API (ex: Firefox)
   if (!isSupported) {
     return (
       <div className="w-full min-h-32 rounded-lg border border-amber-200 bg-amber-50 dark:bg-amber-950/20 p-4">
         <p className="text-sm text-amber-700 dark:text-amber-400">
-          ⚠️ O teu browser não suporta transcrição ao vivo.
-          A transcrição final estará disponível após a gravação via Whisper.
-          Para melhor experiência usa o Chrome.
+          {tx.live.noSupport}
         </p>
       </div>
     )
@@ -49,13 +51,13 @@ export function LiveTranscript({
     >
       {isEmpty && !isListening && (
         <p className="text-slate-400 text-sm italic">
-          A transcrição aparecerá aqui enquanto falas...
+          {tx.live.placeholder}
         </p>
       )}
 
       {isEmpty && isListening && (
         <p className="text-slate-400 text-sm italic animate-pulse">
-          A ouvir...
+          {tx.live.listening}
         </p>
       )}
 

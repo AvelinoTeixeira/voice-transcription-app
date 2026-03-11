@@ -3,16 +3,19 @@
 import { useState } from 'react'
 import { Copy, Trash2, Check, Clock, Globe } from 'lucide-react'
 import { formatDuration } from '@/lib/utils'
-import type { Transcription } from '@/types'
+import { t } from '@/lib/i18n'
+import type { Transcription, Language } from '@/types'
 
 interface TranscriptionCardProps {
   transcription: Transcription
   onDelete: (id: string) => void
+  uiLanguage: Language
 }
 
-export function TranscriptionCard({ transcription, onDelete }: TranscriptionCardProps) {
+export function TranscriptionCard({ transcription, onDelete, uiLanguage }: TranscriptionCardProps) {
   const [copied, setCopied] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const tx = t(uiLanguage)
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(transcription.cleanText)
@@ -27,7 +30,7 @@ export function TranscriptionCard({ transcription, onDelete }: TranscriptionCard
   }
 
   const formatDate = (dateStr: string) => {
-    return new Date(dateStr).toLocaleDateString('pt-BR', {
+    return new Date(dateStr).toLocaleDateString(uiLanguage === 'pt' ? 'pt-BR' : 'en-US', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -73,7 +76,7 @@ export function TranscriptionCard({ transcription, onDelete }: TranscriptionCard
           <button
             onClick={handleCopy}
             className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
-            title="Copiar texto"
+            title={tx.card.copy}
           >
             {copied
               ? <Check className="w-4 h-4 text-green-500" />
@@ -84,7 +87,7 @@ export function TranscriptionCard({ transcription, onDelete }: TranscriptionCard
             onClick={handleDelete}
             disabled={deleting}
             className="p-1.5 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-all disabled:opacity-50"
-            title="Apagar"
+            title={tx.card.delete}
           >
             <Trash2 className="w-4 h-4" />
           </button>
@@ -99,8 +102,8 @@ export function TranscriptionCard({ transcription, onDelete }: TranscriptionCard
       {/* Texto cru — colapsável */}
       <details className="group">
         <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600 transition-colors list-none flex items-center gap-1">
-          <span className="group-open:hidden">▶ Ver texto original (Whisper)</span>
-          <span className="hidden group-open:inline">▼ Esconder texto original</span>
+          <span className="group-open:hidden">{tx.card.showRaw}</span>
+          <span className="hidden group-open:inline">{tx.card.hideRaw}</span>
         </summary>
         <p className="mt-2 text-xs text-slate-400 leading-relaxed italic border-l-2 border-slate-200 dark:border-slate-700 pl-3">
           {transcription.rawText}

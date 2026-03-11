@@ -1,16 +1,26 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { Mic } from 'lucide-react'
 import { TranscriptionCard } from '@/components/dashboard/TranscriptionCard'
 import { SearchBar } from '@/components/dashboard/SearchBar'
 import { useTranscriptions } from '@/hooks/useTranscriptions'
+import { t } from '@/lib/i18n'
 import type { Language } from '@/types'
 
 export default function DashboardPage() {
   const [search, setSearch] = useState('')
   const [languageFilter, setLanguageFilter] = useState<Language | 'all'>('all')
+  const [uiLanguage, setUiLanguage] = useState<Language>('pt')
+
+  // Read the UI language the user selected on the main page
+  useEffect(() => {
+    const stored = localStorage.getItem('ui-language') as Language | null
+    if (stored === 'pt' || stored === 'en') setUiLanguage(stored)
+  }, [])
+
+  const tx = t(uiLanguage)
 
   const { transcriptions, isLoading, error, deleteTranscription } = useTranscriptions()
 
@@ -34,10 +44,10 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-              Histórico
+              {tx.dashboard.title}
             </h1>
             <p className="text-sm text-slate-500 mt-1">
-              {transcriptions.length} transcrição{transcriptions.length !== 1 ? 'ões' : ''} guardada{transcriptions.length !== 1 ? 's' : ''}
+              {transcriptions.length} {transcriptions.length !== 1 ? tx.dashboard.countPlural : tx.dashboard.countSingular}
             </p>
           </div>
           <Link
@@ -45,13 +55,13 @@ export default function DashboardPage() {
             className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
           >
             <Mic className="w-4 h-4" />
-            Nova gravação
+            {tx.dashboard.newRecording}
           </Link>
         </div>
 
         {/* Filtros */}
         <div className="flex flex-col gap-3">
-          <SearchBar value={search} onChange={setSearch} />
+          <SearchBar value={search} onChange={setSearch} placeholder={tx.dashboard.searchPlaceholder} />
           <div className="flex gap-2">
             {(['all', 'pt', 'en'] as const).map(lang => (
               <button
@@ -63,7 +73,7 @@ export default function DashboardPage() {
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400'
                 }`}
               >
-                {lang === 'all' ? '🌍 Todos' : lang === 'pt' ? '🇧🇷 Português' : '🇺🇸 English'}
+                {lang === 'all' ? tx.dashboard.filterAll : lang === 'pt' ? tx.dashboard.filterPt : tx.dashboard.filterEn}
               </button>
             ))}
           </div>
@@ -84,7 +94,7 @@ export default function DashboardPage() {
         {/* Erro */}
         {error && (
           <div className="rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/20 p-4">
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{tx.dashboard.errorLoad}</p>
           </div>
         )}
 
@@ -99,14 +109,14 @@ export default function DashboardPage() {
                 <div>
                   <p className="font-medium text-slate-700 dark:text-slate-300">
                     {search || languageFilter !== 'all'
-                      ? 'Nenhum resultado encontrado'
-                      : 'Ainda não há transcrições'
+                      ? tx.dashboard.noResults
+                      : tx.dashboard.empty
                     }
                   </p>
                   <p className="text-sm text-slate-400 mt-1">
                     {search || languageFilter !== 'all'
-                      ? 'Tenta ajustar os filtros'
-                      : 'Grava a tua primeira voz!'
+                      ? tx.dashboard.noResultsHint
+                      : tx.dashboard.emptyHint
                     }
                   </p>
                 </div>
@@ -115,7 +125,7 @@ export default function DashboardPage() {
                     href="/"
                     className="text-sm text-slate-600 dark:text-slate-400 underline underline-offset-2 hover:text-slate-900 transition-colors"
                   >
-                    Ir para o gravador
+                    {tx.dashboard.goToRecorder}
                   </Link>
                 )}
               </div>
@@ -126,6 +136,7 @@ export default function DashboardPage() {
                     key={transcription.id}
                     transcription={transcription}
                     onDelete={deleteTranscription}
+                    uiLanguage={uiLanguage}
                   />
                 ))}
               </div>

@@ -4,6 +4,7 @@ import { Mic, Square, Pause, Play, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { formatDuration } from '@/lib/utils'
+import { t } from '@/lib/i18n'
 import type { RecorderStatus, Language } from '@/types'
 
 interface RecorderControlsProps {
@@ -31,6 +32,7 @@ export function RecorderControls({
   onResume,
   onReset,
 }: RecorderControlsProps) {
+  const tx = t(language)
   const isIdle = status === 'idle'
   const isRecording = status === 'recording'
   const isPaused = status === 'paused'
@@ -75,7 +77,7 @@ export function RecorderControls({
             {formatDuration(duration)}
           </span>
           {isPaused && (
-            <Badge variant="secondary">Pausado</Badge>
+            <Badge variant="secondary">{tx.recorder.paused}</Badge>
           )}
         </div>
       )}
@@ -140,7 +142,7 @@ export function RecorderControls({
         {isProcessing && !transcription &&  (
           <div className="flex items-center gap-2 text-slate-500">
             <div className="w-5 h-5 border-2 border-slate-300 border-t-slate-600 rounded-full animate-spin" />
-            <span className="text-sm">A processar...</span>
+            <span className="text-sm">{tx.recorder.processing}</span>
           </div>
         )}
       </div>
@@ -152,7 +154,7 @@ export function RecorderControls({
           className="flex items-center gap-1 text-xs text-slate-400 hover:text-slate-600 transition-colors"
         >
           <RotateCcw className="w-3 h-3" />
-          Recomeçar
+          {tx.recorder.restart}
         </button>
       )}
     </div>
