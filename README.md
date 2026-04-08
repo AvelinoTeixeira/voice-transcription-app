@@ -2,7 +2,7 @@
 
 A production-grade system that transforms live audio into structured AI insights — in real-time. Engineered for low latency, high throughput, and scalability.
 
-🔗 [Live Demo](https://voice-transcription-app.vercel.app/) | 👨‍💻 [LinkedIn](https://www.linkedin.com/in/avelino-teixeira/)
+🔗 [Live Demo](https://voice-transcription-app-wine.vercel.app/) | 👨‍💻 [LinkedIn](https://www.linkedin.com/in/avelino-teixeira/)
 
 ---
 
