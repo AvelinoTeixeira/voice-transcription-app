@@ -78,3 +78,10 @@ export async function runAIAction(
   const data = await response.json()
   return data.result
 }
+
+export function startKeepAlive(): () => void {
+  const ping = () => fetch(`${API_URL}/health`).catch(() => {})
+  ping()
+  const interval = setInterval(ping, 4 * 60 * 1000)
+  return () => clearInterval(interval)
+}
